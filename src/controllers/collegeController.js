@@ -19,7 +19,7 @@ const createcollege=async function(req,res){
 
     if(!input.logoLink) return res.status(400).send("please enter logoLink")
 
-    let data=await collegeController.create(input)
+    let data=await collegeModel.create(input)
     res.status(201).send({msg:true,data})
     }
     catch(err){
