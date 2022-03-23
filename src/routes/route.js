@@ -1,7 +1,7 @@
 const express = require('express');
 const { route } = require('express/lib/application');
 const router = express.Router();
-//const CowinController= require("../controllers/cowinController")
+
 
 const collegeController=require('../controllers/collegeController')
 

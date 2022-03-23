@@ -1,5 +1,5 @@
 const collegeModel = require("../models/collegeModel")
-const collegeController=require("../models/collegeModel")
+
 
 const createcollege=async function(req,res){
     try{
@@ -8,7 +8,8 @@ const createcollege=async function(req,res){
     let collegeName=input.name
 
     let fullCollegeName=input.fullName
-    
+
+    // this is your college link=>https://functionup-stg.s3.ap-south-1.amazonaws.com/thorium/mits.jpg
 
     let findClg=await collegeModel.findOne({name:collegeName})
 
