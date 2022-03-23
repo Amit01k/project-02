@@ -84,8 +84,8 @@ const collegeDetails = async function (req, res) {
 
         let activceCollege = await collegeModel.find({ name: collegeName }).select({ _id: 1 })
 
-        if (!activceCollege)
-            return res.status(400).send({ msg: "id is not present" })
+        // if (!activceCollege)
+        //     return res.status(400).send({ msg: "id is not present" })
 
         let interns = await internModel.find({ collegeId: activceCollege, isDeleted: false }).select({ name: 1, email: 1, mobile: 1, _id: 1 })
 
