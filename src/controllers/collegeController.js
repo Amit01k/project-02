@@ -7,9 +7,16 @@ const createcollege=async function(req,res){
 
     let collegeName=input.name
 
+    let fullCollegeName=input.fullName
+    
+
     let findClg=await collegeModel.findOne({name:collegeName})
 
     if(findClg) return res.status(400).send("college already exist")
+
+    let findClg1=await collegeModel.findOne({fullName:fullCollegeName})
+    
+    if(findClg1) return res.status(400).send("clg fullName already exists")
 
     if(!Object.keys(input).length>0) return res.status(200).send("give some data to create college")
 
@@ -23,7 +30,7 @@ const createcollege=async function(req,res){
     res.status(201).send({msg:true,data})
     }
     catch(err){
-        res.status(500).send(err.message)
+        return res.status(500).send(err.message)
     }
 
 }

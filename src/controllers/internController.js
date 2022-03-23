@@ -49,6 +49,14 @@ const createIntern = async function (req, res) {
         if (!collegeId)
             return res.status(400).send("please provide valid collegeId");
 
+
+        let collegeAvailable = await collegeModel.findOne({ _id: collegeId, isDeleted: false })
+
+        if (!collegeAvailable) {
+            res.status(404).send({ error: "college not found" })
+        }
+
+
         const emailAlreadyUsed = await internModel.findOne({ email })
 
         if (emailAlreadyUsed) return res.status(400).send({ status: false, msg: "email already registered" })
@@ -59,18 +67,18 @@ const createIntern = async function (req, res) {
     }
     catch (err) {
         //console.log(err)
-        res.status(500).send({ msg: err.message })
+        return res.status(500).send({ msg: err.message })
     }
 }
 
-const getinterns = async function (req, res) {
+const collegeDetails = async function (req, res) {
     try {
         let collegeName = req.query.college
 
         if (!collegeName)
             return res.status(400).send({ msg: "college name is required" })
 
-        let find = await collegeModel.find({ name: collegeName })
+        let find = await collegeModel.find({ name: collegeName,isDeleted:false })
         if (!(find).length > 0)
             return res.status(400).send({ msg: "college is not present " })
 
@@ -97,12 +105,13 @@ const getinterns = async function (req, res) {
         res.status(200).send({ data: obj })
     }
     catch (err) {
-        res.status(500).send(err.message)
+        
+        return res.status(500).send(err.message)
     }
 
 
 }
 
-module.exports.getinterns = getinterns
+module.exports.collegeDetails = collegeDetails
 
 module.exports.createIntern = createIntern

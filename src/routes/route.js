@@ -19,7 +19,7 @@ router.post("/functionup/colleges",collegeController.createcollege)
 router.post("/functionup/interns",interController.createIntern)
 
 
-router.get("/functionup/collegeDetails",interController.getinterns)
+router.get("/functionup/collegeDetails",interController.collegeDetails)
 
 
 
