@@ -1,31 +1,49 @@
 const collegeModel = require("../models/collegeModel")
 
 
+const isValid = (value) => {
+    if (typeof value === "undefined" || value === null)
+        return false
+    if (typeof value === "string" && value.trim().length === 0)
+        return false
+    else
+        return true
+}
+
+
+const isValidBody=(body)=>{
+    return Object.keys(body).length>0
+}
+
 const createcollege=async function(req,res){
     try{
     let input=req.body
 
-    let collegeName=input.name
+    if(!isValidBody(input)) return res.status(200).send({status:false,msg:"give some data to create college"})
 
-    let fullCollegeName=input.fullName
+    // let collegeName=input.name
+
+    // let fullCollegeName=input.fullName
 
     // this is your college link=>https://functionup-stg.s3.ap-south-1.amazonaws.com/thorium/mits.jpg
 
-    let findClg=await collegeModel.findOne({name:collegeName})
+    const{name,fullName,logoLink}=input
 
-    if(findClg) return res.status(400).send("college already exist")
+    // if(!Object.keys(input).length>0) return res.status(200).send("give some data to create college")
 
-    let findClg1=await collegeModel.findOne({fullName:fullCollegeName})
+    if(!isValid(name)) return res.status(400).send({status:false,msg:"please enter name"})
     
-    if(findClg1) return res.status(400).send("clg fullName already exists")
+    if(!isValid(fullName)) return res.status(400).send({status:false,msg:"please enter full name of college"})
 
-    if(!Object.keys(input).length>0) return res.status(200).send("give some data to create college")
+    if(!isValid(logoLink)) return res.status(400).send({status:false,msg:"please enter logoLink"})
 
-    if(!input.name) return res.status(400).send("please enter name")
-    
-    if(!input.fullName) return res.status(400).send("please enter full name of college")
+    let findClg=await collegeModel.findOne({name})
 
-    if(!input.logoLink) return res.status(400).send("please enter logoLink")
+    if(findClg) return res.status(400).send({status:false,msg:"college name already exist"})
+
+    let findFullName=await collegeModel.findOne({fullName})
+
+    if(findFullName) return res.status(400).send({status:false,msg:"college fullname already exists"})
 
     let data=await collegeModel.create(input)
     res.status(201).send({msg:true,data})
