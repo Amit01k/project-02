@@ -2,15 +2,15 @@ const internModel = require("../models/internModel")
 const collegeModel = require("../models/collegeModel")
 const res = require("express/lib/response")
 
-const isValidBody=(body)=>{
-    return Object.keys(body).length>0
+const isValidBody = (body) => {
+    return Object.keys(body).length > 0
 }
 
-const isValid=(value)=>{
-    if( typeof value ==="undefined" || value ===null) return false
+const isValid = (value) => {
+    if (typeof value === "undefined" || value === null) return false
 
-    if(typeof value ==="string" && value.trim().length===0)
-    return false
+    if (typeof value === "string" && value.trim().length === 0)
+        return false
     else return true
 }
 
@@ -19,55 +19,62 @@ const isValid=(value)=>{
 const createIntern = async function (req, res) {
     try {
         let input = req.body
-        
-        const{name,email,mobile,collegeId}=input
+
+        const { name, email, mobile, collegeId } = input
 
 
-        if (!isValidBody(input)) return res.status(400).send({status:false,msg: "Please enter some data" })
+        if (!isValidBody(input))
+            return res.status(400).send({ status: false, msg: "Please enter some data" })
 
-        if (!isValid(name)) return res.status(400).send({ status:false,msg: "please enter name" })
+        if (!isValid(name))
+            return res.status(400).send({ status: false, msg: "please enter name" })
 
-        if (!isValid(email)) return res.status(400).send({status:false,msg: "please enter email" })
+        if (!isValid(email))
+            return res.status(400).send({ status: false, msg: "please enter email" })
 
-        if (!isValid(mobile)) return res.status(400).send({ status:false,msg: "please enter valid mobile number" })
+        if (!isValid(mobile))
+            return res.status(400).send({ status: false, msg: "please enter valid mobile number" })
 
         const mobileAlreadyused = await internModel.findOne({ mobile })
 
-        if (mobileAlreadyused) return res.status(400).send({ status: false, msg: "mobile is  already used" })
+        if (mobileAlreadyused)
+            return res.status(400).send({ status: false, msg: "mobile is  already used" })
 
-        if (!isValid(collegeId)) return res.status(400).send({ status:false,msg: "please enter College Id" })
+        if (!isValid(collegeId))
+            return res.status(400).send({ status: false, msg: "please enter College Id" })
 
         // const email = email
         const validateEmail = function (email) {
             return /^[a-zA-Z0-9+_.-]+@[a-zA-Z.-]+$/.test(email)
         }
         if (!validateEmail(email)) {
-            return res.status(400).send({status:false,msg: "Please enter valid email" })
+            return res.status(400).send({ status: false, msg: "Please enter valid email" })
         }
 
         const validateMobile = function (mobile) {
             return /^([+]\d{2})?\d{10}$/.test(mobile)
         }
         if (!validateMobile(mobile)) {
-            return res.status(400).send({ status:false,msg: "Please enter valid mobile" })
+            return res.status(400).send({ status: false, msg: "Please enter valid mobile" })
         }
 
-                let college = await collegeModel.findById(collegeId);
+        let college = await collegeModel.findById(collegeId);
 
         if (!college)
-            return res.status(400).send({status:false,msg:"please provide valid collegeId"});
+            return res.status(400).send({ status: false, msg: "please provide valid collegeId" });
 
 
         let collegeAvailable = await collegeModel.findOne({ _id: collegeId, isDeleted: false })
 
         if (!collegeAvailable) {
-            res.status(404).send({status:false,msg: "college not found" })
+            res.status(404).send({ status: false, msg: "college not found" })
         }
 
 
         const emailAlreadyUsed = await internModel.findOne({ email })
 
-        if (emailAlreadyUsed) return res.status(400).send({ status: false, msg: "email already registered" })
+        if (emailAlreadyUsed)
+            return res.status(400).send({ status: false, msg: "email already registered" })
 
 
         let data = await internModel.create(input)
@@ -84,20 +91,19 @@ const collegeDetails = async function (req, res) {
         let collegeName = req.query.college
 
         if (!collegeName)
-            return res.status(400).send({ status:false,msg: "college name is required" })
+            return res.status(400).send({ status: false, msg: "college name is required" })
 
-        let find = await collegeModel.find({ name: collegeName,isDeleted:false })
+        let find = await collegeModel.find({ name: collegeName, isDeleted: false })
+
         if (!(find).length > 0)
-            return res.status(400).send({ status:false,msg: "college is not present " })
+            return res.status(400).send({ status: false, msg: "college is not present " })
 
         let activceCollege = await collegeModel.find({ name: collegeName }).select({ _id: 1 })
-
-       
 
         let interns = await internModel.find({ collegeId: activceCollege, isDeleted: false }).select({ name: 1, email: 1, mobile: 1, _id: 1 })
 
         if (!interns)
-            return res.status(400).send({ status:false,msg: "interns is not present" })
+            return res.status(400).send({ status: false, msg: "interns is not present" })
 
         let result = await collegeModel.find({ name: collegeName }).select({ name: 1, fullName: 1, logoLink: 1, _id: 0 })
 
@@ -109,11 +115,11 @@ const collegeDetails = async function (req, res) {
             intrests: interns
 
         }
-        res.status(200).send({ data: obj })
+        res.status(200).send({ status: true, data: obj })
     }
     catch (err) {
-        
-        return res.status(500).send(err.message)
+
+        return res.status(500).send({ status: false, msg: err.message })
     }
 
 
