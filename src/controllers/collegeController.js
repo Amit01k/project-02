@@ -11,46 +11,46 @@ const isValid = (value) => {
 }
 
 
-const isValidBody=(body)=>{
-    return Object.keys(body).length>0
+const isValidBody = (body) => {
+    return Object.keys(body).length > 0
 }
 
-const createcollege=async function(req,res){
-    try{
-    let input=req.body
+const createcollege = async function (req, res) {
+    try {
+        let input = req.body
 
-    if(!isValidBody(input)) return res.status(200).send({status:false,msg:"give some data to create college"})
+        if (!isValidBody(input))
+            return res.status(200).send({ status: false, msg: "give some data to create college" })
 
-    // let collegeName=input.name
+        // this is your college link=>https://functionup-stg.s3.ap-south-1.amazonaws.com/thorium/mits.jpg
 
-    // let fullCollegeName=input.fullName
+        const { name, fullName, logoLink } = input
 
-    // this is your college link=>https://functionup-stg.s3.ap-south-1.amazonaws.com/thorium/mits.jpg
+        if (!isValid(name))
+            return res.status(400).send({ status: false, msg: "please enter name" })
 
-    const{name,fullName,logoLink}=input
+        if (!isValid(fullName))
+            return res.status(400).send({ status: false, msg: "please enter full name of college" })
 
-    // if(!Object.keys(input).length>0) return res.status(200).send("give some data to create college")
+        if (!isValid(logoLink))
+            return res.status(400).send({ status: false, msg: "please enter logoLink" })
 
-    if(!isValid(name)) return res.status(400).send({status:false,msg:"please enter name"})
-    
-    if(!isValid(fullName)) return res.status(400).send({status:false,msg:"please enter full name of college"})
+        let findClg = await collegeModel.findOne({ name })
 
-    if(!isValid(logoLink)) return res.status(400).send({status:false,msg:"please enter logoLink"})
+        if (findClg)
+            return res.status(400).send({ status: false, msg: "college name already exist" })
 
-    let findClg=await collegeModel.findOne({name})
+        let findFullName = await collegeModel.findOne({ fullName })
 
-    if(findClg) return res.status(400).send({status:false,msg:"college name already exist"})
+        if (findFullName)
+            return res.status(400).send({ status: false, msg: "college fullname already exists" })
 
-    let findFullName=await collegeModel.findOne({fullName})
-
-    if(findFullName) return res.status(400).send({status:false,msg:"college fullname already exists"})
-
-    let data=await collegeModel.create(input)
-    res.status(201).send({msg:true,data})
+        let data = await collegeModel.create(input)
+        res.status(201).send({ msg: true, data })
     }
-    catch(err){
-        return res.status(500).send(err.message)
+    catch (err) {
+        return res.status(500).send({ status: false, msg: err.message})
     }
 
 }
-module.exports.createcollege=createcollege
+module.exports.createcollege = createcollege
